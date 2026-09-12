@@ -1,0 +1,75 @@
+name: MaestroArch Product Builder
+run-name: MaestroArch ${{ inputs.job_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: Correlation id from the control plane
+        required: true
+        type: string
+      idea:
+        description: Product idea
+        required: true
+        type: string
+      repository:
+        description: Existing GitHub destination owner/repo
+        required: false
+        type: string
+      create_repository_name:
+        description: New GitHub repository name
+        required: false
+        type: string
+      deploy_vercel:
+        description: Deploy generated app to Vercel
+        required: false
+        default: "false"
+        type: string
+      production:
+        description: Promote Vercel deployment to production
+        required: false
+        default: "false"
+        type: string
+
+jobs:
+  build-product:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GITHUB_TOKEN: ${{ secrets.MAESTROARCH_GITHUB_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Checkout MaestroArch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install MaestroArch
+        run: npm install
+
+      - name: Build and validate product
+        env:
+          IDEA: ${{ inputs.idea }}
+          DEST_REPOSITORY: ${{ inputs.repository }}
+          CREATE_REPOSITORY_NAME: ${{ inputs.create_repository_name }}
+          DEPLOY_VERCEL: ${{ inputs.deploy_vercel }}
+          PRODUCTION: ${{ inputs.production }}
+        run: |
+          args=("$IDEA")
+          if [ -n "$DEST_REPOSITORY" ]; then args+=("--publish=$DEST_REPOSITORY"); fi
+          if [ -n "$CREATE_REPOSITORY_NAME" ]; then args+=("--create-repo=$CREATE_REPOSITORY_NAME"); fi
+          if [ "$DEPLOY_VERCEL" = "true" ]; then args+=("--deploy-vercel"); fi
+          if [ "$PRODUCTION" = "true" ]; then args+=("--prod"); fi
+          npm run dev -- "${args[@]}"
+
+      - name: Upload generated workspace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestroarch-${{ inputs.job_id }}
+          path: runs/
+          if-no-files-found: warn
+          retention-days: 7
