@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Install
         run: npm install
       - name: Typecheck
@@ -23,3 +23,9 @@ jobs:
         run: npm test
       - name: Smoke generated app
         run: npm run smoke:generated
+      - name: Install hosted control plane
+        working-directory: control-plane
+        run: npm install
+      - name: Build hosted control plane
+        working-directory: control-plane
+        run: npm run build
