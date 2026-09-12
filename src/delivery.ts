@@ -11,10 +11,10 @@ export interface DeliveryOptions {
 }
 
 export interface DeliveryResult {
-  repository?: string;
-  repositoryUrl?: string;
+  repository: string | undefined;
+  repositoryUrl: string | undefined;
   published: string[];
-  deploymentUrl?: string;
+  deploymentUrl: string | undefined;
   blockers: string[];
 }
 
