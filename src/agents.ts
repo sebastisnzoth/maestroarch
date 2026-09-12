@@ -62,7 +62,7 @@ export function buildTasks(): TaskItem[] {
     { id: "P0-001", priority: "P0", title: "Generar especificación ejecutable", owner: "Product + CTO", acceptance: ["PRODUCT/MVP/ARCHITECTURE generados"], blockedBy: [], status: "done" },
     { id: "P0-002", priority: "P0", title: "Generar workspace de implementación", owner: "Full Stack", acceptance: ["plan P0 presente", "estructura lista para código"], blockedBy: ["P0-001"], status: "done" },
     { id: "P0-003", priority: "P0", title: "Implementar generador web real", owner: "Full Stack", acceptance: ["crea app ejecutable desde el prompt"], blockedBy: ["P0-002"], status: "done" },
-    { id: "P0-004", priority: "P0", title: "Ejecutar autocorrección por validaciones", owner: "Orchestrator + QA", acceptance: ["reintenta fallos de typecheck/test/build"], blockedBy: ["P0-003"], status: "todo" },
+    { id: "P0-004", priority: "P0", title: "Ejecutar autocorrección por validaciones", owner: "Orchestrator + QA", acceptance: ["reintenta fallos de install/build automáticamente"], blockedBy: ["P0-003"], status: "done" },
     { id: "P0-005", priority: "P0", title: "Publicar proyecto generado en GitHub", owner: "Repo / DevOps", acceptance: ["repo objetivo recibe artefactos y commits"], blockedBy: ["P0-004"], status: "todo" }
   ];
 }
