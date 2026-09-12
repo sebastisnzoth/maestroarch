@@ -101,7 +101,7 @@ export class RepoDevOpsAgent implements Agent {
   readonly name = "Repo / DevOps Agent";
   async run({ artifacts }: AgentContext): Promise<AgentResult> {
     const vercel = checkVercelReadiness(artifacts);
-    const repo = `# DELIVERY\n\n## GitHub-first\n- commits pequeños y trazables;\n- main siempre recuperable;\n- CI ejecuta typecheck/test/build;\n- .env.example documenta configuración;\n- publicación GitHub disponible mediante adapter y --publish;\n- Vercel readiness: ${vercel.ready ? "OK" : "PENDIENTE"};\n- persistencia local funciona sin secretos;\n- persistencia remota usa auth + RLS por usuario;\n- secretos solo en variables de entorno.\n`;
+    const repo = `# DELIVERY\n\n## GitHub-first\n- commits pequeños y trazables;\n- main siempre recuperable;\n- CI ejecuta typecheck/test/build y smoke-build de una app generada;\n- .env.example documenta configuración;\n- publicación/creación GitHub disponible desde CLI y control plane;\n- deploy Vercel opcional disponible desde CLI y control plane;\n- Vercel readiness: ${vercel.ready ? "OK" : "PENDIENTE"};\n- persistencia local funciona sin secretos;\n- persistencia remota usa auth + RLS por usuario;\n- secretos solo en variables de entorno.\n`;
     return {
       ...base(this.name, vercel.ready ? "Entrega GitHub y Vercel-ready preparada." : "Entrega GitHub preparada; Vercel readiness incompleto.", { "DELIVERY.md": repo }),
       blocked: !vercel.ready,
@@ -123,6 +123,8 @@ export function buildTasks(): TaskItem[] {
     { id: "P0-009", priority: "P0", title: "Preparar entrega Vercel-ready", owner: "Repo / DevOps + CTO", acceptance: ["proyecto generado compatible con Vercel", "configuración de deploy documentada", "sin secretos en repo"], blockedBy: ["P0-008"], status: "done" },
     { id: "P0-010", priority: "P0", title: "Persistencia real opcional sin romper costo cero", owner: "CTO + Database + Full Stack", acceptance: ["modo local por defecto", "adapter Supabase/Postgres opcional", "contrato de datos generado"], blockedBy: ["P0-009"], status: "done" },
     { id: "P0-011", priority: "P0", title: "Aislar datos y autenticación antes de producción remota", owner: "Security + Backend + Product", acceptance: ["auth opcional generada", "RLS por usuario", "sin policies públicas en producción"], blockedBy: ["P0-010"], status: "done" },
-    { id: "P0-012", priority: "P0", title: "Automatizar entrega repo + deploy desde control plane", owner: "Repo / DevOps + Orchestrator", acceptance: ["destino GitHub configurable", "deploy opcional Vercel", "credenciales solo por entorno"], blockedBy: ["P0-011"], status: "todo" }
+    { id: "P0-012", priority: "P0", title: "Automatizar entrega repo + deploy desde control plane", owner: "Repo / DevOps + Orchestrator", acceptance: ["destino GitHub configurable", "deploy opcional Vercel", "credenciales solo por entorno"], blockedBy: ["P0-011"], status: "done" },
+    { id: "P0-013", priority: "P0", title: "Smoke-build de una app generada dentro de CI", owner: "QA + Repo / DevOps", acceptance: ["CI genera una app real", "instala dependencias", "build debe pasar para CI verde"], blockedBy: ["P0-012"], status: "done" },
+    { id: "P0-014", priority: "P0", title: "Persistir historial y recuperar ejecuciones del control plane", owner: "Orchestrator + Backend", acceptance: ["runs sobreviven reinicio local", "consulta historial", "reanudación de entregas bloqueadas"], blockedBy: ["P0-013"], status: "todo" }
   ];
 }
