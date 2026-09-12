@@ -55,6 +55,7 @@ export class QASecurityAgent implements Agent {
       "generated/app/layout.tsx",
       "generated/tsconfig.json",
       "generated/DOMAIN.json",
+      "generated/DOMAIN_FLOW.json",
       "MODEL_ROUTING.json"
     ];
     const missing = required.filter((name) => !artifacts[name]);
@@ -85,7 +86,8 @@ export function buildTasks(): TaskItem[] {
     { id: "P0-004", priority: "P0", title: "Ejecutar autocorrección por validaciones", owner: "Orchestrator + QA", acceptance: ["reintenta fallos de install/build automáticamente"], blockedBy: ["P0-003"], status: "done" },
     { id: "P0-005", priority: "P0", title: "Publicar proyecto generado en GitHub", owner: "Repo / DevOps", acceptance: ["adapter GitHub y comando --publish disponibles"], blockedBy: ["P0-004"], status: "done" },
     { id: "P0-006", priority: "P0", title: "Agregar Model Router con fallback gratuito", owner: "CTO + Full Stack", acceptance: ["proveedor remoto opcional", "fallback local automático", "sin secretos versionados"], blockedBy: ["P0-005"], status: "done" },
-    { id: "P0-007", priority: "P0", title: "Enriquecer generación de flujos según dominio", owner: "Product + Full Stack", acceptance: ["pantallas y acciones específicas por dominio", "no solo CRUD genérico"], blockedBy: ["P0-006"], status: "todo" },
-    { id: "P0-008", priority: "P0", title: "Mostrar progreso real de agentes en control plane", owner: "Orchestrator + Full Stack", acceptance: ["estado por etapa visible", "errores y retries visibles"], blockedBy: ["P0-007"], status: "todo" }
+    { id: "P0-007", priority: "P0", title: "Enriquecer generación de flujos según dominio", owner: "Product + Full Stack", acceptance: ["pantallas y acciones específicas por dominio", "no solo CRUD genérico"], blockedBy: ["P0-006"], status: "done" },
+    { id: "P0-008", priority: "P0", title: "Mostrar progreso real de agentes en control plane", owner: "Orchestrator + Full Stack", acceptance: ["estado por etapa visible", "errores y retries visibles"], blockedBy: ["P0-007"], status: "done" },
+    { id: "P0-009", priority: "P0", title: "Preparar entrega Vercel-ready", owner: "Repo / DevOps + CTO", acceptance: ["proyecto generado compatible con Vercel", "configuración de deploy documentada", "sin secretos en repo"], blockedBy: ["P0-008"], status: "todo" }
   ];
 }
