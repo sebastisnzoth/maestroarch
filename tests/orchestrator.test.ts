@@ -4,7 +4,7 @@ import { ArchitectOrchestrator } from "../src/orchestrator.js";
 import { compileDomain } from "../src/domain.js";
 import { ModelRouter } from "../src/model-router.js";
 
-test("orchestrator converts an idea into a domain-specific Vercel-ready MVP", async () => {
+test("orchestrator converts an idea into a secure domain-specific Vercel-ready MVP", async () => {
   const orchestrator = new ArchitectOrchestrator();
   const events: string[] = [];
   const result = await orchestrator.run("Una web para administrar reservas de una peluquería", (event) => {
@@ -21,6 +21,9 @@ test("orchestrator converts an idea into a domain-specific Vercel-ready MVP", as
   assert.ok(result.artifacts["generated/package.json"]);
   assert.ok(result.artifacts["generated/app/page.tsx"]);
   assert.ok(result.artifacts["generated/app/layout.tsx"]);
+  assert.ok(result.artifacts["generated/app/auth-panel.tsx"]);
+  assert.ok(result.artifacts["generated/lib/auth.ts"]);
+  assert.ok(result.artifacts["generated/AUTH.md"]);
   assert.ok(result.artifacts["generated/DOMAIN.json"]);
   assert.ok(result.artifacts["generated/DOMAIN_FLOW.json"]);
   assert.ok(result.artifacts["generated/DATA_MODEL.json"]);
@@ -30,17 +33,25 @@ test("orchestrator converts an idea into a domain-specific Vercel-ready MVP", as
   assert.ok(result.artifacts["generated/vercel.json"]);
   assert.ok(result.artifacts["generated/DEPLOY.md"]);
   assert.ok(result.artifacts["generated/.env.example"]);
-  assert.match(result.artifacts["generated/app/page.tsx"], /use client/);
+  assert.match(result.artifacts["generated/app/page.tsx"], /AuthPanel/);
   assert.match(result.artifacts["generated/app/page.tsx"], /createPersistenceAdapter/);
   assert.match(result.artifacts["generated/lib/persistence.ts"], /localStorage/);
   assert.match(result.artifacts["generated/lib/persistence.ts"], /supabase/);
+  assert.match(result.artifacts["generated/lib/auth.ts"], /signIn/);
   assert.match(result.artifacts["generated/DOMAIN.json"], /booking/);
   assert.match(result.artifacts["generated/DOMAIN_FLOW.json"], /Nueva reserva/);
   assert.match(result.artifacts["MODEL_ROUTING.json"], /local-compiler/);
+
+  const schema = result.artifacts["generated/supabase/schema.sql"];
+  assert.match(schema, /owner_id/);
+  assert.match(schema, /auth\.uid\(\) = owner_id/);
+  assert.doesNotMatch(schema, /to anon/i);
+  assert.doesNotMatch(schema, /using \(true\)/i);
+
   assert.ok(events.some((item) => item === "product-agent:running"));
   assert.ok(events.some((item) => item === "repo-devops-agent:completed"));
-  assert.equal(result.nextP0?.id, "P0-011");
-  assert.equal(result.firstCustomerBlocker, "Aislar datos y autenticación antes de producción remota");
+  assert.equal(result.nextP0?.id, "P0-012");
+  assert.equal(result.firstCustomerBlocker, "Automatizar entrega repo + deploy desde control plane");
 });
 
 test("model router stays free and local when no remote provider is configured", async () => {
