@@ -4,79 +4,86 @@ Sistema autónomo para transformar una idea en un producto digital funcional, pr
 
 ## Objetivo
 
-Convertir una solicitud en lenguaje natural en:
+**Idea → Producto → Arquitectura → App funcional → QA/Seguridad → GitHub → Vercel**
 
-**Idea → Producto → Arquitectura → Código → QA/Seguridad → GitHub → Deploy**
-
-## Regla operativa
-
-Todo agente debe hacerse esta pregunta:
+Todo agente debe preguntarse:
 
 > ¿Qué impide hoy que este producto tenga su primer usuario o cliente real?
 
-## Modo de trabajo
+## Autonomía
 
-- No preguntar por decisiones menores.
-- Elegir por defecto la opción más simple, gratuita, mantenible y compatible con GitHub/Vercel.
-- Resolver bloqueos técnicos de forma autónoma.
-- Pedir intervención solo para decisiones críticas: dinero, credenciales, seguridad, borrado de datos, cambios sustanciales de producto o aceptación legal.
+MaestroArch no pregunta por decisiones menores. Elige por defecto la alternativa más simple, gratuita, mantenible y reversible. Solo escala decisiones críticas como dinero, credenciales ausentes cuando realmente se necesita ejecutar una integración, riesgo de datos, seguridad relevante o cambios sustanciales del producto.
 
-## Estado actual v0.1
+## Estado actual
 
-Ya existe un runtime ejecutable con:
+El runtime ya incluye Orchestrator, Product, CTO, Full Stack, QA/Security y Repo/DevOps. Desde una idea puede generar especificación, detectar/enriquecer dominio, construir una app Next.js interactiva, crear flujos específicos para reservas/marketplace/servicios/comercio, validar el build, aplicar fallback local si no hay IA remota, preparar autenticación/persistencia segura opcional con Supabase, publicar en GitHub y preparar/ejecutar un deploy opcional a Vercel.
 
-- Architect Orchestrator;
-- Product Agent;
-- CTO Agent;
-- Full Stack Agent;
-- QA + Security Agent;
-- Repo / DevOps Agent;
-- generador de scaffold Next.js;
-- workspace por ejecución;
-- validación automática `npm install` + `npm run build` con retry básico;
-- adaptador de publicación a GitHub;
-- CI para typecheck y tests.
+La persistencia es **local-first**: sin cuentas ni credenciales funciona con `localStorage`. Si se configura Supabase, el proyecto generado incorpora Auth, `owner_id` y RLS ligada a `auth.uid()`.
 
-## Ejecutar
+## CLI
 
 ```bash
 npm install
 npm run dev -- "Quiero una web para administrar reservas de una peluquería"
 ```
 
-El resultado se genera dentro de:
-
-```text
-runs/<slug>/
-```
-
-La aplicación web queda en:
-
-```text
-runs/<slug>/generated/
-```
-
-## Publicar un proyecto generado en GitHub
-
-Configurar `GITHUB_TOKEN` como variable de entorno y ejecutar:
+Crear automáticamente un repo GitHub para la app generada:
 
 ```bash
-npm run dev -- "Tu idea" --publish=owner/repositorio
+GITHUB_TOKEN=... npm run dev -- "Tu idea" --create-repo=mi-producto
 ```
 
-El sistema no debe pedir el token por chat ni guardarlo en el repositorio.
+Publicar en un repo existente:
+
+```bash
+GITHUB_TOKEN=... npm run dev -- "Tu idea" --publish=owner/repositorio
+```
+
+Publicar/deployar opcionalmente en Vercel:
+
+```bash
+VERCEL_TOKEN=... npm run dev -- "Tu idea" --deploy-vercel
+```
+
+Para producción se puede agregar `--prod`. Los tokens se leen únicamente desde variables de entorno y nunca se generan dentro del proyecto.
+
+## Control plane web
+
+```bash
+npm run serve
+```
+
+La interfaz permite describir el producto, ver en vivo qué agente está trabajando, validar el build, elegir repo GitHub existente o crear uno nuevo y solicitar un deploy opcional a Vercel. Si faltan credenciales para una entrega externa, el producto queda construido y el sistema informa ese bloqueo sin perder el trabajo.
+
+## Model Router
+
+La IA remota es opcional. Sin configuración, MaestroArch usa su compilador local gratuito. Para un endpoint compatible con OpenAI Chat Completions:
+
+```text
+MAESTROARCH_AI_ENDPOINT=
+MAESTROARCH_AI_MODEL=
+MAESTROARCH_AI_PROVIDER=
+MAESTROARCH_AI_API_KEY=
+```
+
+Si el proveedor remoto falla o devuelve un contrato inválido, vuelve automáticamente al compilador local.
 
 ## Validación
 
 ```bash
 npm run typecheck
 npm test
+npm run smoke:generated
 ```
 
-La CI de GitHub ejecuta estas validaciones automáticamente.
+La CI no solo valida el código de MaestroArch: también genera una aplicación real de prueba, instala sus dependencias y exige que su build termine correctamente antes de quedar verde.
 
-## Próximo cuello de botella
+## Configuración
 
-El siguiente salto de producto es pasar del scaffold genérico a un **generador de dominio asistido por modelo**, capaz de convertir la especificación en pantallas, entidades, acciones y flujo funcional específico sin intervención rutinaria.
+Ver `.env.example`. Las integraciones externas son opcionales y el camino base continúa siendo de costo cero.
 
-Ver `GPT.md`, `AGENTS.md`, `ROADMAP.md` y `CREADOR_ARQUITECTO_MASTER.md`.
+## Regla de continuidad
+
+La fuente de verdad operativa es `AGENTS.md`. Al terminar un P0, el Orchestrator debe tomar el siguiente P0 desbloqueado sin pedir confirmación rutinaria.
+
+Ver también `GPT.md`, `MVP.md`, `ARCHITECTURE.md` y `CREADOR_ARQUITECTO_MASTER.md`.
