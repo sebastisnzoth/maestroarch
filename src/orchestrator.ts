@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { normalizeIdea, slugFromIdea } from "./intake.js";
-import { ProductAgent, CTOAgent, FullStackAgent, QASecurityAgent, RepoDevOpsAgent, buildTasks } from "./agents.js";
+import { ProductAgent, CTOAgent, FullStackAgent, QASecurityAgent, RepoDevOpsAgent } from "./agents.js";
+import { buildTasks } from "./tasks.js";
 import type { Agent, AgentContext, OrchestrationEventHandler, OrchestrationResult, StageStatus } from "./types.js";
 
 export class ArchitectOrchestrator {
