@@ -6,6 +6,24 @@ export interface DomainSpec {
   sections: string[];
 }
 
+const DOMAIN_KINDS = new Set<DomainSpec["kind"]>(["booking", "marketplace", "services", "commerce", "generic"]);
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.length > 0 && value.every((item) => typeof item === "string" && item.trim().length > 0);
+}
+
+export function isDomainSpec(value: unknown): value is DomainSpec {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<DomainSpec>;
+  return typeof candidate.kind === "string"
+    && DOMAIN_KINDS.has(candidate.kind as DomainSpec["kind"])
+    && typeof candidate.title === "string"
+    && candidate.title.trim().length > 0
+    && isStringArray(candidate.entities)
+    && isStringArray(candidate.actions)
+    && isStringArray(candidate.sections);
+}
+
 function includesAny(text: string, words: string[]): boolean {
   return words.some((word) => text.includes(word));
 }
