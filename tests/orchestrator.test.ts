@@ -50,8 +50,8 @@ test("orchestrator converts an idea into a secure domain-specific Vercel-ready M
 
   assert.ok(events.some((item) => item === "product-agent:running"));
   assert.ok(events.some((item) => item === "repo-devops-agent:completed"));
-  assert.equal(result.nextP0?.id, "P0-012");
-  assert.equal(result.firstCustomerBlocker, "Automatizar entrega repo + deploy desde control plane");
+  assert.equal(result.nextP0?.id, "P0-014");
+  assert.equal(result.firstCustomerBlocker, "Persistir historial y recuperar ejecuciones del control plane");
 });
 
 test("model router stays free and local when no remote provider is configured", async () => {
