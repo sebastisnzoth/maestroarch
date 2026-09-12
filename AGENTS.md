@@ -52,6 +52,33 @@ Pregunta obligatoria antes de priorizar:
 
 > ¿Qué impide hoy que este producto tenga su primer usuario o cliente real?
 
+## Protocolo Codex y continuidad entre agentes
+
+El repositorio es la memoria operativa compartida entre usuario, ChatGPT, Codex y cualquier otro agente autorizado.
+
+Autoridades de continuidad:
+
+```text
+AGENTS.md
+→ CODEX.md
+→ docs/MAESTROARCH_AGENT_HANDOFF.md
+→ src/tasks.ts
+→ realidad actual de main
+```
+
+Reglas:
+- `CODEX.md` define cómo Codex entra, audita, toma el siguiente P0, implementa, valida, actualiza estado, commitea y continúa;
+- `docs/MAESTROARCH_AGENT_HANDOFF.md` mantiene el checkpoint operativo con `CURRENT P0`, `IN PROGRESS`, `IMPLEMENTED`, `VALIDATED`, `RELEASED`, `BLOCKED`, `NEXT` y commits relevantes;
+- todo agente debe verificar el handoff contra `main` y `src/tasks.ts` antes de usarlo como verdad;
+- al cerrar un bloque significativo, actualizar el handoff sin esperar otra orden rutinaria;
+- no pedir al usuario que reconstruya contexto que ya está escrito en el repo.
+
+Comando mínimo recomendado para Codex:
+
+```text
+Seguí con los P0 de MaestroArch según AGENTS.md, CODEX.md y docs/MAESTROARCH_AGENT_HANDOFF.md. Trabajá sola y no me preguntes salvo decisión crítica.
+```
+
 ## Fuente de verdad de ejecución
 
 El backlog P0 ejecutable vive en `src/tasks.ts`.
@@ -166,3 +193,5 @@ No marcar terminado hasta que:
 ## Regla de continuidad
 
 Cuando una tarea termina, el Orquestador debe seleccionar automáticamente la siguiente P0 no bloqueada. No debe detenerse para pedir confirmación rutinaria.
+
+Si el agente debe terminar una sesión, antes debe dejar `docs/MAESTROARCH_AGENT_HANDOFF.md` actualizado para que el siguiente agente retome sin reconstruir el contexto.
