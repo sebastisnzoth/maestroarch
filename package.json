@@ -1,0 +1,22 @@
+{
+  "name": "maestroarch",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Autonomous product architect: idea -> plan -> implementation workspace -> validation -> GitHub-ready output.",
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/tests/orchestrator.test.js",
+    "check": "npm run typecheck && npm run test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
