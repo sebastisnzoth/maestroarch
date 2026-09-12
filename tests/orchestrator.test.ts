@@ -15,8 +15,8 @@ test("orchestrator converts an idea into specs plus executable web scaffold", as
   assert.ok(result.artifacts["generated/package.json"]);
   assert.ok(result.artifacts["generated/app/page.tsx"]);
   assert.ok(result.artifacts["generated/app/layout.tsx"]);
-  assert.equal(result.nextP0?.id, "P0-004");
-  assert.equal(result.firstCustomerBlocker, "Ejecutar autocorrección por validaciones");
+  assert.equal(result.nextP0?.id, "P0-005");
+  assert.equal(result.firstCustomerBlocker, "Publicar proyecto generado en GitHub");
 });
 
 test("empty idea is rejected", async () => {
