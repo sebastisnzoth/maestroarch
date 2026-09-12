@@ -1,12 +1,11 @@
 import type { ProductRequest } from "../types.js";
-import { compileDomain } from "../domain.js";
+import { compileDomain, type DomainSpec } from "../domain.js";
 
 function safeJson(value: unknown): string {
   return JSON.stringify(value);
 }
 
-export function generateWebProject(request: ProductRequest): Record<string, string> {
-  const domain = compileDomain(request.idea);
+export function generateWebProject(request: ProductRequest, domain: DomainSpec = compileDomain(request.idea)): Record<string, string> {
   const title = request.idea.length > 72 ? `${request.idea.slice(0, 69)}...` : request.idea;
 
   return {
