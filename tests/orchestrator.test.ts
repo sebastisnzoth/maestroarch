@@ -23,18 +23,24 @@ test("orchestrator converts an idea into a domain-specific Vercel-ready MVP", as
   assert.ok(result.artifacts["generated/app/layout.tsx"]);
   assert.ok(result.artifacts["generated/DOMAIN.json"]);
   assert.ok(result.artifacts["generated/DOMAIN_FLOW.json"]);
+  assert.ok(result.artifacts["generated/DATA_MODEL.json"]);
+  assert.ok(result.artifacts["generated/lib/persistence.ts"]);
+  assert.ok(result.artifacts["generated/PERSISTENCE.md"]);
+  assert.ok(result.artifacts["generated/supabase/schema.sql"]);
   assert.ok(result.artifacts["generated/vercel.json"]);
   assert.ok(result.artifacts["generated/DEPLOY.md"]);
   assert.ok(result.artifacts["generated/.env.example"]);
   assert.match(result.artifacts["generated/app/page.tsx"], /use client/);
-  assert.match(result.artifacts["generated/app/page.tsx"], /localStorage/);
+  assert.match(result.artifacts["generated/app/page.tsx"], /createPersistenceAdapter/);
+  assert.match(result.artifacts["generated/lib/persistence.ts"], /localStorage/);
+  assert.match(result.artifacts["generated/lib/persistence.ts"], /supabase/);
   assert.match(result.artifacts["generated/DOMAIN.json"], /booking/);
   assert.match(result.artifacts["generated/DOMAIN_FLOW.json"], /Nueva reserva/);
   assert.match(result.artifacts["MODEL_ROUTING.json"], /local-compiler/);
   assert.ok(events.some((item) => item === "product-agent:running"));
   assert.ok(events.some((item) => item === "repo-devops-agent:completed"));
-  assert.equal(result.nextP0?.id, "P0-010");
-  assert.equal(result.firstCustomerBlocker, "Persistencia real opcional sin romper costo cero");
+  assert.equal(result.nextP0?.id, "P0-011");
+  assert.equal(result.firstCustomerBlocker, "Aislar datos y autenticación antes de producción remota");
 });
 
 test("model router stays free and local when no remote provider is configured", async () => {
