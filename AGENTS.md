@@ -52,6 +52,17 @@ Pregunta obligatoria antes de priorizar:
 
 > ¿Qué impide hoy que este producto tenga su primer usuario o cliente real?
 
+## Fuente de verdad de ejecución
+
+El backlog P0 ejecutable vive en `src/tasks.ts`.
+
+Reglas:
+- un P0 solo pasa a `done` cuando cumple sus criterios y la validación aplicable;
+- al cerrar un P0 se debe crear/seleccionar automáticamente el siguiente cuello de botella real;
+- no mantener copias divergentes del estado del roadmap dentro de agentes;
+- si el siguiente P0 solo está bloqueado por una credencial o secreto externo, completar primero todo el trabajo técnico que no requiera ese secreto y recién entonces escalarlo al usuario;
+- CI verde debe incluir código MaestroArch, smoke-build de una app generada y build del control plane hosted cuando corresponda.
+
 ## CTO Agent
 
 Responsable de:
@@ -110,6 +121,7 @@ Responsable de:
 - README;
 - variables de entorno documentadas;
 - preparación de Vercel;
+- GitHub Actions como worker gratuito cuando el control plane serverless no deba ejecutar builds largos;
 - trazabilidad del trabajo.
 
 ## Agentes opcionales
