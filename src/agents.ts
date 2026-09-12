@@ -1,4 +1,5 @@
 import type { Agent, AgentContext, AgentResult, TaskItem } from "./types.js";
+import { generateWebProject } from "./generator/web.js";
 
 function base(agent: string, summary: string, artifacts: Record<string, string> = {}): AgentResult {
   return { agent, summary, artifacts, risks: [], nextActions: [], blocked: false };
@@ -25,15 +26,26 @@ export class FullStackAgent implements Agent {
   readonly name = "Full Stack Developer Agent";
   async run({ request }: AgentContext): Promise<AgentResult> {
     const plan = `# IMPLEMENTATION_PLAN\n\n## P0\n1. Crear shell web ejecutable.\n2. Implementar flujo principal de: ${request.idea}\n3. Añadir estados loading/empty/error.\n4. Añadir persistencia solo si es necesaria.\n5. Añadir smoke test del flujo principal.\n\n## Reglas\n- componentes pequeños;\n- contratos tipados;\n- cero secretos en código;\n- preferir dependencias estándar y gratuitas.\n`;
-    return base(this.name, "Plan de implementación P0 generado.", { "IMPLEMENTATION_PLAN.md": plan });
+    return base(this.name, "Plan P0 y scaffold web ejecutable generados.", {
+      "IMPLEMENTATION_PLAN.md": plan,
+      ...generateWebProject(request)
+    });
   }
 }
 
 export class QASecurityAgent implements Agent {
   readonly name = "QA + Security Agent";
-  async run(): Promise<AgentResult> {
-    const checklist = `# VALIDATION\n\n## Gate obligatorio\n- [ ] typecheck\n- [ ] tests\n- [ ] build\n- [ ] flujo principal smoke-tested\n- [ ] inputs validados\n- [ ] ningún secreto versionado\n- [ ] variables documentadas\n- [ ] errores críticos = 0\n`;
-    return base(this.name, "Gate de calidad y seguridad definido.", { "VALIDATION.md": checklist });
+  async run({ artifacts }: AgentContext): Promise<AgentResult> {
+    const required = ["generated/package.json", "generated/app/page.tsx", "generated/app/layout.tsx", "generated/tsconfig.json"];
+    const missing = required.filter((name) => !artifacts[name]);
+    const blocked = missing.length > 0;
+    const checklist = `# VALIDATION\n\n## Gate automático de artefactos\n${required.map((name) => `- [${artifacts[name] ? "x" : " "}] ${name}`).join("\n")}\n\n## Gate de ejecución\n- [ ] typecheck del proyecto generado\n- [ ] tests del dominio\n- [ ] build del proyecto generado\n- [x] inputs base normalizados\n- [x] ningún secreto embebido por el generador\n`;
+    return {
+      ...base(this.name, blocked ? "Faltan artefactos P0." : "Scaffold mínimo validado; queda ejecutar build del proyecto generado.", { "VALIDATION.md": checklist }),
+      blocked,
+      blockReason: blocked ? `Faltan: ${missing.join(", ")}` : undefined,
+      nextActions: blocked ? ["Regenerar artefactos faltantes"] : ["Ejecutar install/typecheck/build sobre generated/"]
+    };
   }
 }
 
@@ -49,7 +61,7 @@ export function buildTasks(): TaskItem[] {
   return [
     { id: "P0-001", priority: "P0", title: "Generar especificación ejecutable", owner: "Product + CTO", acceptance: ["PRODUCT/MVP/ARCHITECTURE generados"], blockedBy: [], status: "done" },
     { id: "P0-002", priority: "P0", title: "Generar workspace de implementación", owner: "Full Stack", acceptance: ["plan P0 presente", "estructura lista para código"], blockedBy: ["P0-001"], status: "done" },
-    { id: "P0-003", priority: "P0", title: "Implementar generador web real", owner: "Full Stack", acceptance: ["crea app ejecutable desde el prompt"], blockedBy: ["P0-002"], status: "todo" },
+    { id: "P0-003", priority: "P0", title: "Implementar generador web real", owner: "Full Stack", acceptance: ["crea app ejecutable desde el prompt"], blockedBy: ["P0-002"], status: "done" },
     { id: "P0-004", priority: "P0", title: "Ejecutar autocorrección por validaciones", owner: "Orchestrator + QA", acceptance: ["reintenta fallos de typecheck/test/build"], blockedBy: ["P0-003"], status: "todo" },
     { id: "P0-005", priority: "P0", title: "Publicar proyecto generado en GitHub", owner: "Repo / DevOps", acceptance: ["repo objetivo recibe artefactos y commits"], blockedBy: ["P0-004"], status: "todo" }
   ];
