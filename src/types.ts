@@ -1,5 +1,6 @@
 export type Priority = "P0" | "P1" | "P2";
 export type RunStatus = "queued" | "planning" | "executing" | "validating" | "fixing" | "blocked" | "completed";
+export type StageStatus = "queued" | "running" | "completed" | "blocked" | "failed";
 
 export interface ProductRequest {
   idea: string;
@@ -32,6 +33,16 @@ export interface TaskItem {
   blockedBy: string[];
   status: "todo" | "doing" | "done" | "blocked";
 }
+
+export interface OrchestrationEvent {
+  runId: string;
+  stage: string;
+  status: StageStatus;
+  message: string;
+  timestamp: string;
+}
+
+export type OrchestrationEventHandler = (event: OrchestrationEvent) => void | Promise<void>;
 
 export interface OrchestrationResult {
   runId: string;
