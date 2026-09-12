@@ -2,10 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { ArchitectOrchestrator } from "../src/orchestrator.js";
 import { compileDomain } from "../src/domain.js";
+import { ModelRouter } from "../src/model-router.js";
 
-test("orchestrator converts an idea into specs plus interactive domain MVP", async () => {
+test("orchestrator converts an idea into a domain-specific Vercel-ready MVP", async () => {
   const orchestrator = new ArchitectOrchestrator();
-  const result = await orchestrator.run("Una web para administrar reservas de una peluquería");
+  const events: string[] = [];
+  const result = await orchestrator.run("Una web para administrar reservas de una peluquería", (event) => {
+    events.push(`${event.stage}:${event.status}`);
+  });
 
   assert.equal(result.status, "completed");
   assert.ok(result.artifacts["PRODUCT.md"]);
@@ -13,15 +17,32 @@ test("orchestrator converts an idea into specs plus interactive domain MVP", asy
   assert.ok(result.artifacts["ARCHITECTURE.md"]);
   assert.ok(result.artifacts["IMPLEMENTATION_PLAN.md"]);
   assert.ok(result.artifacts["VALIDATION.md"]);
+  assert.ok(result.artifacts["MODEL_ROUTING.json"]);
   assert.ok(result.artifacts["generated/package.json"]);
   assert.ok(result.artifacts["generated/app/page.tsx"]);
   assert.ok(result.artifacts["generated/app/layout.tsx"]);
   assert.ok(result.artifacts["generated/DOMAIN.json"]);
+  assert.ok(result.artifacts["generated/DOMAIN_FLOW.json"]);
+  assert.ok(result.artifacts["generated/vercel.json"]);
+  assert.ok(result.artifacts["generated/DEPLOY.md"]);
+  assert.ok(result.artifacts["generated/.env.example"]);
   assert.match(result.artifacts["generated/app/page.tsx"], /use client/);
   assert.match(result.artifacts["generated/app/page.tsx"], /localStorage/);
   assert.match(result.artifacts["generated/DOMAIN.json"], /booking/);
-  assert.equal(result.nextP0?.id, "P0-005");
-  assert.equal(result.firstCustomerBlocker, "Publicar proyecto generado en GitHub");
+  assert.match(result.artifacts["generated/DOMAIN_FLOW.json"], /Nueva reserva/);
+  assert.match(result.artifacts["MODEL_ROUTING.json"], /local-compiler/);
+  assert.ok(events.some((item) => item === "product-agent:running"));
+  assert.ok(events.some((item) => item === "repo-devops-agent:completed"));
+  assert.equal(result.nextP0?.id, "P0-010");
+  assert.equal(result.firstCustomerBlocker, "Persistencia real opcional sin romper costo cero");
+});
+
+test("model router stays free and local when no remote provider is configured", async () => {
+  const router = new ModelRouter({ endpoint: "", model: "" });
+  const result = await router.compileDomain("marketplace para contratar músicos");
+  assert.equal(result.route, "local");
+  assert.equal(result.provider, "local-compiler");
+  assert.equal(result.spec.kind, "marketplace");
 });
 
 test("domain compiler detects booking and marketplace products", () => {
