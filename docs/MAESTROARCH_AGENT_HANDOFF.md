@@ -21,7 +21,8 @@
 ## IN PROGRESS
 
 - P0-016 preparado técnicamente.
-- Falta únicamente la acción externa crítica necesaria para habilitar el worker remoto en el entorno hosted.
+- Proyecto Vercel `control-plane` creado y vinculado al repo `sebastisnzoth/maestroarch`.
+- Se fuerza un nuevo commit en `main` para disparar el deploy mediante la integración Git de Vercel.
 
 ## LAST COMPLETED
 
@@ -52,8 +53,8 @@
 
 ## VALIDATED
 
-- CI #82 para commit `0adff9f9fa34bcc95adc1ac59d894090c240e8db` finalizó `success`.
-- Esa ejecución valida el estado actual de `main` posterior a la integración de `CODEX.md`/handoff.
+- CI #84 para commit `357e7e5088b47cfc3ca448d9b4b972da10b40d8a` finalizó `success`.
+- Esa ejecución validó typecheck, tests, smoke de app generada y build del control plane hosted.
 - No declarar como validado ningún cambio posterior sin revisar su ejecución exacta.
 
 ## RELEASED
@@ -64,17 +65,11 @@
 
 ### B1 · Credencial server-side del worker
 
-**Falta:** configurar en el entorno hosted:
+**Falta por verificar:** que `MAESTROARCH_CONTROL_GITHUB_TOKEN` esté guardado en el entorno hosted correcto y funcione en runtime.
 
-```text
-MAESTROARCH_CONTROL_GITHUB_TOKEN
-```
-
-**Dónde:** Vercel → proyecto del control plane MaestroArch → Settings → Environment Variables.
+**Dónde:** Vercel → proyecto `control-plane` → Settings → Environment Variables.
 
 **Por qué bloquea:** el control plane necesita una credencial server-side para disparar de forma segura el workflow worker sin exponer el token al navegador.
-
-**Acción mínima del usuario:** crear/configurar `MAESTROARCH_CONTROL_GITHUB_TOKEN` como variable server-side para el entorno que se va a probar y confirmar que quedó guardada.
 
 **Resultado esperado:** la API server-side del control plane podrá disparar `.github/workflows/product-builder.yml` en `sebastisnzoth/maestroarch`.
 
@@ -84,8 +79,8 @@ MAESTROARCH_CONTROL_GITHUB_TOKEN
 
 ## NEXT
 
-1. Configurar `MAESTROARCH_CONTROL_GITHUB_TOKEN` en Vercel.
-2. Desplegar/verificar el control plane hosted.
+1. Verificar que Vercel cree el deployment a partir de este commit en `main`.
+2. Abrir la URL hosted y comprobar respuesta.
 3. Probar desde la web: idea → workflow remoto → app generada → validación.
 4. Si todo pasa, mover P0-016 a `done` en `src/tasks.ts`.
 5. Crear el siguiente P0 preguntando: **¿qué impide ahora conseguir el primer usuario real?**
@@ -96,6 +91,8 @@ MAESTROARCH_CONTROL_GITHUB_TOKEN
 09ce821  docs(codex): add autonomous execution protocol
 882b31a  docs(handoff): add shared agent execution state
 0adff9f  docs(agents): link Codex protocol and shared handoff
+71b52b0  docs(handoff): record green CI and narrow P0-016 blocker
+357e7e5  docs(release): add control plane hosted release runbook
 ```
 
 ## HANDOFF CONTRACT
