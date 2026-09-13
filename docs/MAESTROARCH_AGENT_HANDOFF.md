@@ -20,9 +20,8 @@
 
 ## IN PROGRESS
 
-- Preparación documental para operación autónoma entre usuario, Codex y ChatGPT.
-- `CODEX.md` incorporado como protocolo de ejecución.
-- Este handoff incorporado como estado compartido.
+- P0-016 preparado técnicamente.
+- Falta únicamente la acción externa crítica necesaria para habilitar el worker remoto en el entorno hosted.
 
 ## LAST COMPLETED
 
@@ -35,6 +34,7 @@
 - Ya existe publicación GitHub/deploy opcional desde control plane.
 - Ya existe smoke-build de una app generada en CI.
 - Ya existe control plane Vercel-native con GitHub Actions worker.
+- `CODEX.md` y este handoff ya están integrados con `AGENTS.md`.
 
 ## IMPLEMENTED
 
@@ -52,8 +52,9 @@
 
 ## VALIDATED
 
-- CI previa ha validado typecheck, tests, smoke-build del proyecto generado y build del control plane en ejecuciones recientes.
-- No asumir que un commit posterior está validado hasta verificar su ejecución exacta.
+- CI #82 para commit `0adff9f9fa34bcc95adc1ac59d894090c240e8db` finalizó `success`.
+- Esa ejecución valida el estado actual de `main` posterior a la integración de `CODEX.md`/handoff.
+- No declarar como validado ningún cambio posterior sin revisar su ejecución exacta.
 
 ## RELEASED
 
@@ -69,25 +70,32 @@
 MAESTROARCH_CONTROL_GITHUB_TOKEN
 ```
 
+**Dónde:** Vercel → proyecto del control plane MaestroArch → Settings → Environment Variables.
+
 **Por qué bloquea:** el control plane necesita una credencial server-side para disparar de forma segura el workflow worker sin exponer el token al navegador.
 
-**Acción mínima del usuario cuando sea estrictamente necesaria:** configurar esa variable segura en Vercel para el proyecto MaestroArch/control plane y confirmar que quedó disponible para el entorno correspondiente.
+**Acción mínima del usuario:** crear/configurar `MAESTROARCH_CONTROL_GITHUB_TOKEN` como variable server-side para el entorno que se va a probar y confirmar que quedó guardada.
+
+**Resultado esperado:** la API server-side del control plane podrá disparar `.github/workflows/product-builder.yml` en `sebastisnzoth/maestroarch`.
+
+**Retomar después:** deploy hosted → prueba idea → workflow remoto → app generada → validación → cerrar P0-016.
 
 **No hacer:** pegar el token en el repo, frontend, issue, README o chat si puede evitarse.
 
 ## NEXT
 
-1. Verificar que la CI más reciente correspondiente al estado actual esté verde.
-2. Desplegar el control plane hosted.
-3. Configurar/confirmar `MAESTROARCH_CONTROL_GITHUB_TOKEN` server-side.
-4. Probar desde la web: idea → workflow remoto → app generada → validación.
-5. Si todo pasa, mover P0-016 a `done` en `src/tasks.ts`.
-6. Crear el siguiente P0 preguntando: **¿qué impide ahora conseguir el primer usuario real?**
+1. Configurar `MAESTROARCH_CONTROL_GITHUB_TOKEN` en Vercel.
+2. Desplegar/verificar el control plane hosted.
+3. Probar desde la web: idea → workflow remoto → app generada → validación.
+4. Si todo pasa, mover P0-016 a `done` en `src/tasks.ts`.
+5. Crear el siguiente P0 preguntando: **¿qué impide ahora conseguir el primer usuario real?**
 
 ## COMMITS RELEVANTES
 
 ```text
 09ce821  docs(codex): add autonomous execution protocol
+882b31a  docs(handoff): add shared agent execution state
+0adff9f  docs(agents): link Codex protocol and shared handoff
 ```
 
 ## HANDOFF CONTRACT
