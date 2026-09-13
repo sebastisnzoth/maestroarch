@@ -22,7 +22,8 @@
 
 - P0-016 preparado técnicamente.
 - Proyecto Vercel `control-plane` creado y vinculado al repo `sebastisnzoth/maestroarch`.
-- Se fuerza un nuevo commit en `main` para disparar el deploy mediante la integración Git de Vercel.
+- `control-plane/vercel.json` agregado para mantener Git deployments habilitados y fijar install/build commands.
+- Un commit nuevo en `main` disparó el check de Vercel, por lo que la integración Git está conectada.
 
 ## LAST COMPLETED
 
@@ -41,7 +42,7 @@
 
 - Orchestrator + Product + CTO + Full Stack + QA/Security + Repo/DevOps.
 - `src/tasks.ts` como fuente de verdad del backlog P0.
-- control plane hosted.
+- control plane hosted listo para release.
 - worker vía GitHub Actions.
 - generación Next.js interactiva.
 - flujo específico por dominio.
@@ -50,11 +51,13 @@
 - CI con typecheck, tests, smoke generated app y build del control plane.
 - `CODEX.md` como protocolo de continuidad.
 - `docs/MAESTROARCH_AGENT_HANDOFF.md` como handoff operativo.
+- `control-plane/vercel.json` con Git deployments habilitados.
 
 ## VALIDATED
 
 - CI #84 para commit `357e7e5088b47cfc3ca448d9b4b972da10b40d8a` finalizó `success`.
 - Esa ejecución validó typecheck, tests, smoke de app generada y build del control plane hosted.
+- El check Vercel del commit `4f3bb01712c3e9c1b128a1b4333b98c7f4a5ea9d` fue recibido por Vercel, confirmando la conexión Git, pero quedó bloqueado por rate limit del plan Hobby.
 - No declarar como validado ningún cambio posterior sin revisar su ejecución exacta.
 
 ## RELEASED
@@ -63,24 +66,28 @@
 
 ## BLOCKED
 
-### B1 · Credencial server-side del worker
+### B1 · Vercel Hobby build-rate-limit
+
+**Estado real:** el check `Vercel` del commit `4f3bb01712c3e9c1b128a1b4333b98c7f4a5ea9d` devuelve `failure` con destino `upgradeToPro=build-rate-limit`.
+
+**Qué significa:** la integración Git ya recibe los pushes; el deploy no empieza porque el team Hobby alcanzó temporalmente el límite de builds de Vercel.
+
+**Acción automática:** reintentar cuando la ventana de rate limit se libere. No subir a Pro ni generar costo sin autorización.
+
+### B2 · Credencial server-side del worker
 
 **Falta por verificar:** que `MAESTROARCH_CONTROL_GITHUB_TOKEN` esté guardado en el entorno hosted correcto y funcione en runtime.
 
 **Dónde:** Vercel → proyecto `control-plane` → Settings → Environment Variables.
 
-**Por qué bloquea:** el control plane necesita una credencial server-side para disparar de forma segura el workflow worker sin exponer el token al navegador.
-
 **Resultado esperado:** la API server-side del control plane podrá disparar `.github/workflows/product-builder.yml` en `sebastisnzoth/maestroarch`.
-
-**Retomar después:** deploy hosted → prueba idea → workflow remoto → app generada → validación → cerrar P0-016.
 
 **No hacer:** pegar el token en el repo, frontend, issue, README o chat si puede evitarse.
 
 ## NEXT
 
-1. Verificar que Vercel cree el deployment a partir de este commit en `main`.
-2. Abrir la URL hosted y comprobar respuesta.
+1. Reintentar deploy cuando Vercel libere el build-rate-limit del plan Hobby.
+2. Verificar deployment y URL hosted.
 3. Probar desde la web: idea → workflow remoto → app generada → validación.
 4. Si todo pasa, mover P0-016 a `done` en `src/tasks.ts`.
 5. Crear el siguiente P0 preguntando: **¿qué impide ahora conseguir el primer usuario real?**
@@ -93,6 +100,8 @@
 0adff9f  docs(agents): link Codex protocol and shared handoff
 71b52b0  docs(handoff): record green CI and narrow P0-016 blocker
 357e7e5  docs(release): add control plane hosted release runbook
+c3dfb8e  docs(handoff): record Vercel project and trigger hosted deploy
+4f3bb01  chore(vercel): enable git deployments for control plane
 ```
 
 ## HANDOFF CONTRACT
